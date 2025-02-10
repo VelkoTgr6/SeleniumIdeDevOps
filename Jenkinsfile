@@ -8,39 +8,21 @@ pipeline {
         CHROMEDRIVER_PATH = '"C:\\Program Files\\Google\\Chrome\\Application\\chromedriver.exe"'
     }
 
+    stages {
         stage('Checkout Code') {
             steps {
+
+                // Checkout the code from the repository
+
                 checkout scm
-            }
-        }
-
-        stage('Uninstall Chrome') {
-            steps {
-                bat 'if exist "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" (echo Uninstalling Chrome && "C:\\Program Files\\Google\\Chrome\\Application\\chrome_installer.exe" /uninstall)'
-            }
-        }
-
-        stage('Install Specific Version of Chrome') {
-            steps {
-                bat '''
-                echo Installing Chrome version $CHROME_VERSION
-                choco install googlechrome --version $CHROME_VERSION --confirm
-                '''
-            }
-        }
-
-        stage('Install ChromeDriver') {
-            steps {
-                bat '''
-                echo Installing ChromeDriver version $CHROMEDRIVER_VERSION
-                curl -o "C:\\Program Files\\Google\\Chrome\\Application\\chromedriver.zip" https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_win32.zip
-                tar -xf "C:\\Program Files\\Google\\Chrome\\Application\\chromedriver.zip" -C "C:\\Program Files\\Google\\Chrome\\Application\\"
-                '''
             }
         }
 
         stage('Set Up .NET Core') {
             steps {
+
+                // Set up .NET SDK
+
                 bat '''
                 echo Installing .NET Core SDK 6.0
                 choco install dotnet-sdk --version 6.0.100
@@ -50,19 +32,30 @@ pipeline {
 
         stage('Restore Dependencies') {
             steps {
-                bat 'dotnet restore SeleniumIde.sln'
+               
+                 // Restore .NET Core project dependencies
+
+                 bat 'dotnet restore SeleniumIde.sln'
             }
         }
 
         stage('Build') {
             steps {
-                bat 'dotnet build SeleniumIde.sln --configuration Release'
+                
+                 // Build the .NET Core project
+
+                 bat 'dotnet build SeleniumIde.sln --configuration Release'
+                
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'dotnet test SeleniumIde.sln --logger "trx;LogFileName=Testresults.trx"'
+               
+                 // Run the tests using .NET Core
+
+                 bat 'dotnet test SeleniumIde.sln --logger "trx;LogFileName=Testresults.trx"'
+                
             }
         }
     }
