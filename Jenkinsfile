@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
 
-                // Checkout the code from the repo
+                // Checkout the code from the reposotory
 
                 checkout scm
             }
