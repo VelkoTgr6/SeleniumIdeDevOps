@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
 
-                // Checkout the code from the reposotory
+                // Checkout the code from the reposo
 
                 checkout scm
             }
@@ -20,32 +20,36 @@ pipeline {
 
         stage('Set Up .NET Core') {
             steps {
+
                 // Set up .NET SDK
+
                 bat '''
                 echo Installing .NET Core SDK 6.0
-                powershell -command "Invoke-WebRequest -Uri https://download.visualstudio.microsoft.com/download/pr/7e1e2b4d-9b2b-4b8e-8b2b-4b8e8b2b4b8e/dotnet-sdk-6.0.100-win-x64.exe -OutFile dotnet-sdk-6.0.100-win-x64.exe"
-                powershell -command "Start-Process -FilePath dotnet-sdk-6.0.100-win-x64.exe -ArgumentList '/quiet' -Wait"
+                choco install dotnet-sdk --version 6.0.100
                 '''
             }
         }
 
         stage('Uninstall Current Chrome') {
             steps {
+
                 // Uninstall the current version of Chrome
-                bat '''
+
+                bat '''	
                 echo Uninstalling current Google Chrome
-                powershell -command "Get-WmiObject -Class Win32_Product | Where-Object { $_.Name -eq 'Google Chrome' } | ForEach-Object { $_.Uninstall() }"
+                choco uninstall googlechrome -y
                 '''
             }
         }
 
         stage('Install Specific Chrome Version') {
             steps {
-                // Install the specific version of Chrom
-                bat '''
+
+                // Install the specific version of Chrome
+
+                bat '''	
                 echo Installing Google Chrome version %CHROME_VERSION%
-                powershell -command "Invoke-WebRequest -Uri https://dl.google.com/release2/chrome/AQAAAPy0j6k3nQAAAAAABQAAAAA/133.0.6943.60_chrome_installer.exe -OutFile chrome_installer.exe"
-                powershell -command "Start-Process -FilePath chrome_installer.exe -ArgumentList '/silent /install' -Wait"
+                choco install googlechrome --version=%CHROME_VERSION% -y --allow downgrade --ignore-checksums
                 '''
             }
         }
