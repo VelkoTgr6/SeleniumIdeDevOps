@@ -9,20 +9,46 @@ pipeline {
     }
 
     stages {
+        stage('Install Chocolatey') {
+            steps {
+                bat 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser'
+                bat 'iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
+            }
+        }
+
         stage('Checkout Code') {
             steps {
-
-                // Checkout the code from the repository
-
                 checkout scm
+            }
+        }
+
+        stage('Uninstall Chrome') {
+            steps {
+                bat 'if exist "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" (echo Uninstalling Chrome && "C:\\Program Files\\Google\\Chrome\\Application\\chrome_installer.exe" /uninstall)'
+            }
+        }
+
+        stage('Install Specific Version of Chrome') {
+            steps {
+                bat '''
+                echo Installing Chrome version $CHROME_VERSION
+                choco install googlechrome --version $CHROME_VERSION --confirm
+                '''
+            }
+        }
+
+        stage('Install ChromeDriver') {
+            steps {
+                bat '''
+                echo Installing ChromeDriver version $CHROMEDRIVER_VERSION
+                curl -o "C:\\Program Files\\Google\\Chrome\\Application\\chromedriver.zip" https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_win32.zip
+                tar -xf "C:\\Program Files\\Google\\Chrome\\Application\\chromedriver.zip" -C "C:\\Program Files\\Google\\Chrome\\Application\\"
+                '''
             }
         }
 
         stage('Set Up .NET Core') {
             steps {
-
-                // Set up .NET SDK
-
                 bat '''
                 echo Installing .NET Core SDK 6.0
                 choco install dotnet-sdk --version 6.0.100
@@ -32,30 +58,19 @@ pipeline {
 
         stage('Restore Dependencies') {
             steps {
-               
-                 // Restore .NET Core project dependencies
-
-                 bat 'dotnet restore SeleniumIde.sln'
+                bat 'dotnet restore SeleniumIde.sln'
             }
         }
 
         stage('Build') {
             steps {
-                
-                 // Build the .NET Core project
-
-                 bat 'dotnet build SeleniumIde.sln --configuration Release'
-                
+                bat 'dotnet build SeleniumIde.sln --configuration Release'
             }
         }
 
         stage('Run Tests') {
             steps {
-               
-                 // Run the tests using .NET Core
-
-                 bat 'dotnet test SeleniumIde.sln --logger "trx;LogFileName=Testresults.trx"'
-                
+                bat 'dotnet test SeleniumIde.sln --logger "trx;LogFileName=Testresults.trx"'
             }
         }
     }
