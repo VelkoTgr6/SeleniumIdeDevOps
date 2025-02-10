@@ -41,7 +41,7 @@ pipeline {
 
         stage('Install Specific Chrome Version') {
             steps {
-                // Install the specific version of Chrome
+                // Install the specific version of Chrom
                 bat '''
                 echo Installing Google Chrome version %CHROME_VERSION%
                 powershell -command "Invoke-WebRequest -Uri https://dl.google.com/release2/chrome/AQAAAPy0j6k3nQAAAAAABQAAAAA/133.0.6943.60_chrome_installer.exe -OutFile chrome_installer.exe"
