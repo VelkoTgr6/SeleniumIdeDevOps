@@ -15,9 +15,7 @@ pipeline {
                 bat 'choco feature enable -n allowGlobalConfirmation'
             }
         }
-    }
-
-    stages {
+        
         stage('Checkout Code') {
             steps {
 
