@@ -9,6 +9,14 @@ pipeline {
     }
 
     stages {
+        stage('Enable Chocolatey Global Confirmation') {
+            steps {
+                // Enable global confirmation for Chocolatey
+                bat 'choco feature enable -n allowGlobalConfirmation'
+            }
+        }
+
+    stages {
         stage('Checkout Code') {
             steps {
 
