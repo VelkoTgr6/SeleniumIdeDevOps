@@ -8,13 +8,22 @@ pipeline {
         CHROMEDRIVER_PATH = '"C:\\Program Files\\Google\\Chrome\\Application\\chromedriver.exe"'
     }
 
-    stages {
-        stage('Install Chocolatey') {
-            steps {
-                bat 'Set-ExecutionPolicy RemoteSigned -Scope CurrentUser'
-                bat 'iex ((New-Object System.Net.WebClient).DownloadString("https://chocolatey.org/install.ps1"))'
-            }
+    stage('Install Chocolatey') {
+        steps {
+            bat '''
+            REM Install Chocolatey if it's not installed
+            SET CHOCO_PATH="C:\\ProgramData\\chocolatey\\bin\\choco.exe"
+            IF NOT EXIST %CHOCO_PATH% (
+                echo Installing Chocolatey...
+                SET-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12;
+                Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+            ) ELSE (
+                echo Chocolatey is already installed.
+            )
+            '''
         }
+}
+
 
         stage('Checkout Code') {
             steps {
