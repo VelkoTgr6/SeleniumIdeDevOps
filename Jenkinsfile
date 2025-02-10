@@ -25,7 +25,7 @@ pipeline {
 
                 bat '''
                 echo Installing .NET Core SDK 6.0
-                choko install dotnet-sdk --version 6.0.100
+                choco install dotnet-sdk --version 6.0.100
                 '''
             }
         }
